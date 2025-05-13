@@ -8,14 +8,31 @@
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject var eventStore: EventStore
+    @State private var showingAddEventSheet = false
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationView {
+            List {
+                ForEach(eventStore.events) { event in
+                    EventRow(event: event)
+                }
+                .onDelete { indexSet in
+                    eventStore.remove(at: indexSet)
+                }
+            }
+            .navigationTitle("Since Then")
+            .toolbar {
+                Button {
+                    showingAddEventSheet = true
+                } label: {
+                    Image(systemName: "plus")
+                }
+            }
+            .sheet(isPresented: $showingAddEventSheet) {
+                AddEventView()
+            }
         }
-        .padding()
     }
 }
 
