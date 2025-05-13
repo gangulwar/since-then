@@ -10,15 +10,32 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var eventStore: EventStore
     @State private var showingAddEventSheet = false
-    
+
     var body: some View {
         NavigationView {
-            List {
-                ForEach(eventStore.events) { event in
-                    EventRow(event: event)
-                }
-                .onDelete { indexSet in
-                    eventStore.remove(at: indexSet)
+            Group {
+                if eventStore.events.isEmpty {
+                    VStack(spacing: 16) {
+                        Image(systemName: "calendar.badge.exclamationmark")
+                            .font(.system(size: 48))
+                            .foregroundColor(.gray)
+                        Text("No events added yet.")
+                            .font(.headline)
+                            .foregroundColor(.gray)
+                        Text("Tap + to add your first event.")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    List {
+                        ForEach(eventStore.events) { event in
+                            EventRow(event: event)
+                        }
+                        .onDelete { indexSet in
+                            eventStore.remove(at: indexSet)
+                        }
+                    }
                 }
             }
             .navigationTitle("Since Then")
@@ -35,6 +52,7 @@ struct ContentView: View {
         }
     }
 }
+
 
 #Preview {
     ContentView()
